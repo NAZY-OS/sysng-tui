@@ -1,0 +1,19 @@
+[package]
+name = "sysng"
+version = "2.3.0"
+edition = "2021"
+authors = ["NAZY-OS"]
+about = "Structured cross-platform terminal system monitor"
+description = "Modern terminal system monitor with view modes"
+
+[dependencies]
+ratatui = "0.29"
+crossterm = "0.28"
+sysinfo = "0.31"
+
+[profile.release]
+opt-level = 3
+lto = true
+codegen-units = 1
+panic = "abort"
+strip = true
