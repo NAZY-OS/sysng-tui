@@ -1,7 +1,3 @@
-//! ============================================================================
-//! sysng - Zero-Bloat System Monitor (GNU/KISS Architecture)
-//! Designed for high flexibility, fault tolerance, and cross-platform portability.
-//! ============================================================================
 use crossterm::{
     event::{self, Event, KeyCode, KeyModifiers, MouseEventKind},
     execute,
@@ -287,7 +283,7 @@ fn update_process_cache(state: &mut ApplicationState) {
 fn refresh_system_metrics(state: &mut ApplicationState) {
     if state.last_update.elapsed() >= Duration::from_secs(3) {
         state.system_data.refresh_all();
-        state.network_data.refresh(true);
+        state.network_data.refresh();
         update_process_cache(state);
         state.last_update = Instant::now();
     }
@@ -351,7 +347,7 @@ fn process_events(state: &mut ApplicationState) -> Result<(), io::Error> {
                         KeyCode::Enter => {
                             if !state.flat_rows_cache.is_empty() {
                                 let selected_row = &state.flat_rows_cache[state.selected_row_index];
-                                let pid_to_kill = selected_row.pid;
+                                let _pid_to_kill = selected_row.pid;
                                 let proc_name = selected_row.display_command.trim().to_string();
                                 let proc_user = selected_row.ruser.clone();
                                 let pid_str = selected_row.pid_str.clone();
@@ -360,14 +356,14 @@ fn process_events(state: &mut ApplicationState) -> Result<(), io::Error> {
                                 
                                 #[cfg(unix)]
                                 {
-                                    use nix::sys::signal::{kill, Signal};
-                                    if let Ok(signal) = Signal::try_from(sig_num) {
-                                        let _ = kill(nix::unistd::Pid::from_raw(pid_to_kill.as_u32() as i32), signal);
-                                    }
+                                    let _ = Command::new("kill")
+                                        .arg(format!("-{}", sig_num))
+                                        .arg(&pid_str)
+                                        .output();
                                 }
                                 #[cfg(not(unix))]
                                 {
-                                    if let Some(process) = state.system_data.process(pid_to_kill) {
+                                    if let Some(process) = state.system_data.process(_pid_to_kill) {
                                         process.kill();
                                     }
                                 }
@@ -590,7 +586,6 @@ fn render_active_content(
                 .skip(start_idx)
                 .take(visible_height.max(10))
             {
-                // Dynamic threshold coloring for CPU usage
                 let cpu_color = if row_data.cpu_val >= 70.0 {
                     Color::Red
                 } else if row_data.cpu_val >= 30.0 {
