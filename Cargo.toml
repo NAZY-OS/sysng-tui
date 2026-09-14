@@ -1,8 +1,9 @@
 [package]
-name = "sysng"
+name = "sysng-tui"
 version = "2.3.0"
 edition = "2021"
 authors = ["NAZY-OS"]
+license = "GNU v3.0"
 about = "Structured cross-platform terminal system monitor"
 description = "Modern terminal system monitor with view modes"
 
