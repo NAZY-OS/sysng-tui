@@ -1,6 +1,6 @@
 # sysng-tui
 
-**A simple GNU - Libre System monitor terminal-ui**
+**A simple GNU - Libre Treeview System monitor terminal-ui**
 
 
 ## Quick Start
@@ -20,6 +20,9 @@
 3. Run Script
    ```sh
    ./build.sh
+   meson setup build
+   sudo meson install -C build
+   rm -rf build
    ```
 
 
